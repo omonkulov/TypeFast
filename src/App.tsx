@@ -1,7 +1,7 @@
 import React from "react";
 import { UserTextBox } from "./components/UserTextBox";
 import { useState } from "react";
-import { TypingComponent } from "./components/TypingComponent";
+import { Typer } from "./components/Typer";
 
 function App() {
 	const [wordsArr, setWordsArr] = useState<Array<Array<string>>>([]);
@@ -9,7 +9,7 @@ function App() {
 	return (
 		<div className="App">
 			<UserTextBox setWordsArr={setWordsArr} setNumOfChars={setNumbOfChars} />
-			<TypingComponent wordsArr={wordsArr} numOfChars={numOfChars} />
+			<Typer wordsArr={wordsArr} numOfChars={numOfChars} />
 		</div>
 	);
 }
