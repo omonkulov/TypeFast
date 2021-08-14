@@ -2,35 +2,25 @@ import React from "react";
 import { useRef } from "react";
 
 interface Props {
-	setTypeText: React.Dispatch<React.SetStateAction<null | string>>;
+	setWordsArr: React.Dispatch<React.SetStateAction<Array<Array<string>>>>;
+	setNumOfChars: React.Dispatch<React.SetStateAction<number>>;
 }
 
-export const UserTextBox: React.FC<Props> = ({ setTypeText }) => {
+export const UserTextBox: React.FC<Props> = ({ setWordsArr, setNumOfChars }) => {
 	const textAreaRef = useRef<HTMLTextAreaElement>(null);
-
 	const submitHandler = () => {
 		if (textAreaRef && textAreaRef.current) {
-			let arr = [];
-			for (let i = 0; i < textAreaRef.current.value.length; i++) {
-				let isWordStart = false;
-				let isWordEnd = false;
-				if (i === 0 || textAreaRef.current.value[i - 1] === " ")
-					isWordStart = true;
-				if (
-					i + 1 >= textAreaRef.current.value.length ||
-					textAreaRef.current.value[i + 1] === " "
-				)
-					isWordEnd = true;
-
-				arr.push({
-					key: textAreaRef.current.value[i],
-					wordStart: isWordStart,
-					wordEnd: isWordEnd,
-				});
+			let charsCount = 0
+			let wordArr = textAreaRef.current.value.split(" ");
+			//Removes elements that is empy string
+			wordArr = wordArr.filter((word) => word !== "");
+			let lettersArr = [];
+			for (let i = 0; i < wordArr.length; i++) {
+				charsCount = wordArr[i].length
+				lettersArr.push(wordArr[i].split(""));
 			}
-			console.log(arr);
-
-			setTypeText(textAreaRef.current.value);
+			setWordsArr(lettersArr);
+			setNumOfChars(charsCount);
 		}
 	};
 	return (

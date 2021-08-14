@@ -7,14 +7,23 @@ body {
 	-moz-osx-font-smoothing: grayscale;
 }
 
-.past {
+
+
+.words-container {
+	display: flex;
+	flex-wrap: wrap;
+	width: 70vw;
+}
+.word {
+	margin-right: 10px;
+}
+.letter {
 	color: gray;
 }
-
-.current {
-	color: rgb(255, 0, 0);
+.correct {
+	color: rgb(37, 37, 37);
 }
 
-.incoming {
-	color: rgb(37, 37, 37);
+.incorrect {
+	color: rgb(255, 0, 0);
 }

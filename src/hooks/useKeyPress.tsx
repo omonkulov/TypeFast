@@ -1,17 +1,13 @@
 import { useState, useEffect } from "react";
 
-interface Params {
-	callback: (key: string) => void;
-}
-
-const useKeyPress = (options: Params) => {
+const useKeyPress = (callback: (key: string) => void) => {
 	const [keyPressed, setKeyPressed] = useState<null | string>(null);
 
 	useEffect(() => {
 		const downHandler = ({ key }: KeyboardEvent): void => {
 			if ((keyPressed !== key && key.length === 1) || key === "Backspace") {
 				setKeyPressed(key);
-				options.callback(key);
+				callback(key);
 			}
 		};
 

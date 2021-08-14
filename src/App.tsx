@@ -1,49 +1,15 @@
-import React, { ReactElement } from "react";
+import React from "react";
 import { UserTextBox } from "./components/UserTextBox";
-import { useState, useEffect } from "react";
-import useKeyPress from "./hooks/useKeyPress";
+import { useState } from "react";
+import { TypingComponent } from "./components/TypingComponent";
 
 function App() {
-	const [noteToType, setNoteToType] = useState<null | string>(null);
-	const [currentChar, setCurrentChar] = useState<number>(0);
-
-	useKeyPress({
-		callback: (key: string) => {
-			console.log(key);
-		},
-	});
-
-	useEffect(() => {
-		console.log(noteToType);
-	}, [noteToType]);
-
-	const mapNote = (): null | Array<ReactElement> => {
-		if (!noteToType) return null;
-		let arr = noteToType.split("").map((letter, i) => {
-			return (
-				<span
-					key={i}
-					className={`${
-						currentChar === i
-							? "current"
-							: currentChar >= i
-							? "past"
-							: currentChar <= i
-							? "incoming"
-							: null
-					}`}
-				>
-					{letter}
-				</span>
-			);
-		});
-		return arr;
-	};
+	const [wordsArr, setWordsArr] = useState<Array<Array<string>>>([]);
+	const [numOfChars, setNumbOfChars] = useState<number>(0)
 	return (
 		<div className="App">
-			<UserTextBox setTypeText={setNoteToType} />
-			{mapNote()}
-			<button onClick={() => setCurrentChar((prev) => prev + 1)}>Change</button>
+			<UserTextBox setWordsArr={setWordsArr} setNumOfChars={setNumbOfChars} />
+			<TypingComponent wordsArr={wordsArr} numOfChars={numOfChars} />
 		</div>
 	);
 }
