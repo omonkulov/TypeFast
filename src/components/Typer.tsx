@@ -1,249 +1,142 @@
 import React from "react";
-import { useState, useRef, useEffect, useLayoutEffect } from "react";
-import useKeyPress from "../hooks/useKeyPress";
+import { useState, useEffect, useRef } from "react";
+import styled from "styled-components";
 
-interface Args {
-	wordsArr: Array<Array<string>>;
-	numOfChars: number;
+const InputField = styled.p`
+	background-color: #ddd;
+	width: 50rem;
+	height: 10rem;
+	margin: 2rem auto;
+	padding: 1rem;
+	border-radius: 10px;
+	border: 2px solid #555;
+	transition: all 0.3s;
+	font-size: 1.5rem;
+	font-family: Consolas;
+
+	display: flex;
+	flex-wrap: wrap;
+	column-gap: 1ch;
+
+	&:focus {
+		outline: none;
+		background-color: #e1e3f7;
+		border: 2px solid #7622e3;
+	}
+`;
+
+const Caret = styled.div`
+	min-width: 2px;
+	min-height: 1.5rem;
+	background-color: rgb(57, 85, 241);
+	position: absolute;
+	transform: tanslate(100%, -50%);
+`;
+
+interface Props {
+	text: string;
 }
 
-export const Typer: React.FC<Args> = ({ wordsArr, numOfChars }) => {
-	const carotRef = useRef<HTMLDivElement>(null);
+export const Typer: React.FC<Props> = ({ text }) => {
+	//Me
+	const caretRef = useRef<HTMLDivElement>(null);
 	const lettertRef = useRef<HTMLDivElement>(null);
-	const [wordQueue, setWordQueue] = useState<any>([]);
-	const [numOfKeysPressed, setNumOfKeysPressed] = useState<number>(0);
-	const [numOfSpacePressed, setNumOfSpacePressed] = useState<number>(0);
-	const [isSpaceMissed, setIsSpaceMissed] = useState<boolean>(false);
-	const [isExtraKeyPressed, setIsExtraKeyPressed] = useState<boolean>(false);
-	const [isDeleteKeyPressed, setIsDeleteKeyPressed] = useState<boolean>(false);
-	const [isValidKeyPressed, setIsValidKeyPressed] = useState<boolean>(false);
-	const [pressedKey, setPressedKey] = useState<string>("");
-	const [reset, setReset] = useState<boolean>(true);
 
-	//Reset the word queue
+	const [input, setInput] = useState(``);
+
 	useEffect(() => {
-		if (reset) {
-			setReset(false);
-			let initQueue = [];
-			if (!wordsArr[0]) return;
-			for (let i = 0; i < wordsArr.length; i++) {
-				const word = wordsArr[i];
-				let initLetersArr = [];
-				for (let j = 0; j < word.length; j++) {
-					initLetersArr.push({
-						letter: word[j],
-						pressedKey: null,
-						pressedTime: null,
-						isNext: i === 0 && j === i,
-						isPassed: false,
-						isExtra: false,
-						isCorrect: false,
-					});
-				}
-				initQueue.push(initLetersArr);
-			}
-			setWordQueue([...initQueue]);
+		if (caretRef.current && lettertRef.current) {
+			caretRef.current.style.top = `${lettertRef.current?.offsetTop}px`;
+			caretRef.current.style.left = `${lettertRef.current?.offsetLeft + 10}px`;
 		}
-	}, [wordsArr, reset, numOfKeysPressed]);
+	}, [lettertRef, caretRef, input]);
 
-	//First time trigger reset
-	useEffect(() => {
-		setReset(true);
-	}, [wordsArr]);
-
-	//Checks if user missed space, if yes start adding the extra characters
-	useEffect(() => {
-		if (
-			wordQueue[numOfSpacePressed] &&
-			numOfKeysPressed >= wordQueue[numOfSpacePressed].length
-		) {
-			setIsSpaceMissed(true);
+	function handleKeyDown(evt: React.KeyboardEvent<HTMLDivElement>) {
+		if (evt.ctrlKey || evt.altKey || evt.metaKey) return;
+		if (evt.key.length === 1) {
+			setInput((input) => input + evt.key);
+		} else if (evt.key === `Backspace`) {
+			setInput((input) => input.slice(0, -1));
 		}
-	}, [numOfKeysPressed, numOfSpacePressed, wordQueue]);
+	}
 
-	//Debug
-	useEffect(() => {
-		console.log(wordQueue);
-	}, [wordQueue]);
-
-	//Carot's position
-	useEffect(() => {
-		if (lettertRef.current?.className.includes("extra")) {
-			carotRef.current?.setAttribute(
-				"style",
-				`position: absolute; top: ${lettertRef.current?.offsetTop}px; left: ${
-					lettertRef.current?.offsetLeft + 8
-				}px;`
-			);
-			return;
-		}
-		carotRef.current?.setAttribute(
-			"style",
-			`position: absolute; top: ${lettertRef.current?.offsetTop}px; left: ${lettertRef.current?.offsetLeft}px;`
-		);
-	}, [numOfKeysPressed, numOfSpacePressed, wordQueue]);
-
-	//Valid Key Pressed
-	useLayoutEffect(() => {
-		if (isValidKeyPressed && pressedKey !== "") {
-			setIsValidKeyPressed(false);
-			if (wordQueue[0] === undefined) return;
-			let worQueueTemp = wordQueue;
-			let wordArrTemp = worQueueTemp[numOfSpacePressed];
-			let letterTemp = wordArrTemp[numOfKeysPressed].letter;
-			wordArrTemp[numOfKeysPressed] = {
-				...wordArrTemp[numOfKeysPressed],
-				pressedKey: pressedKey,
-				pressedTime: Date.now(),
-				isNext: false,
-				isPassed: true,
-				isExtra: false,
-				isCorrect: letterTemp === pressedKey,
-			};
-
-			if (wordArrTemp[numOfKeysPressed + 1]) {
-				wordArrTemp[numOfKeysPressed + 1] = {
-					...wordArrTemp[numOfKeysPressed + 1],
-					isNext: true,
-				};
-			}
-			worQueueTemp[numOfSpacePressed] = wordArrTemp;
-			setWordQueue([...worQueueTemp]);
-			setNumOfKeysPressed((prev) => prev + 1);
-		}
-	}, [
-		isValidKeyPressed,
-		numOfKeysPressed,
-		numOfSpacePressed,
-		pressedKey,
-		wordQueue,
-	]);
-
-	//Space missed, start adding chars to the word
-	useLayoutEffect(() => {
-		if (isSpaceMissed && isExtraKeyPressed) {
-			setIsExtraKeyPressed(false);
-			let worQueueTemp = wordQueue;
-			let wordArrTemp = worQueueTemp[numOfSpacePressed];
-			wordArrTemp[wordArrTemp.length - 1] = {
-				...wordArrTemp[wordArrTemp.length - 1],
-				isNext: false,
-			};
-			wordArrTemp.push({
-				letter: pressedKey,
-				pressedKey: pressedKey,
-				pressedTime: Date.now(),
-				isNext: true,
-				isPassed: true,
-				isExtra: true,
-				isCorrect: false,
-			});
-			worQueueTemp[numOfSpacePressed] = wordArrTemp;
-			setWordQueue([...worQueueTemp]);
-		}
-	}, [
-		isSpaceMissed,
-		numOfSpacePressed,
-		pressedKey,
-		wordQueue,
-		isExtraKeyPressed,
-	]);
-
-	//Backspace pressed
-	useEffect(() => {
-		if (isDeleteKeyPressed) {
-			if (wordQueue[0] === undefined) return;
-			setIsDeleteKeyPressed(false);
-			let worQueueTemp = wordQueue;
-			let wordArrTemp = worQueueTemp[numOfSpacePressed];
-			let lettterTemp = wordArrTemp[numOfKeysPressed];
-			if (lettterTemp && !lettterTemp.isExtra) {
-			}
-		}
-	}, [isDeleteKeyPressed, numOfKeysPressed, wordQueue, numOfSpacePressed]);
-
-	//Check if finished
-	useEffect(() => {
-		if (wordQueue[0] === undefined) return;
-		if (numOfSpacePressed >= wordQueue.length) {
-			setReset(true);
-			setNumOfSpacePressed(0);
-			setNumOfKeysPressed(0);
-		}
-	}, [numOfSpacePressed, wordQueue]);
-
-	//Keypress Hook
-	useKeyPress((key: string) => {
-		if (key === " ") {
-			if (wordQueue[0] === undefined) return;
-			if (numOfSpacePressed >= wordQueue.length) {
-				setReset(true);
-				setNumOfSpacePressed(0);
-				setNumOfKeysPressed(0);
-				return;
-			}
-			setNumOfSpacePressed((prev) => prev + 1);
-			setNumOfKeysPressed(0);
-			setIsSpaceMissed(false);
-		} else if (key === "Backspace") {
-			setIsDeleteKeyPressed(true);
-		} else {
-			if (isSpaceMissed) {
-				setPressedKey(key);
-				setIsExtraKeyPressed(true);
-			} else {
-				setPressedKey(key);
-				setIsValidKeyPressed(true);
-			}
-		}
-	});
-
-	//Render the words
-	const wordsMapped = () => {
-		return wordQueue.map((word: any, i: number) => {
-			let wordsCompArr = word.map((obj: any, j: number) => {
-				let classNamesD = "letter";
-				if (obj.isPassed) {
-					if (obj.isCorrect) {
-						classNamesD = "correct";
-					} else {
-						classNamesD = "incorrect";
-					}
-				} else if (obj.isNext) {
-					classNamesD = "next";
-				}
-				if (obj.isExtra) {
-					classNamesD += " extra";
-				}
-
-				return (
-					<span
-						key={j}
-						className={"letter-margin " + classNamesD}
-						ref={obj.isNext ? lettertRef : null}
-					>
-						{obj.letter}
-					</span>
-				);
-			});
-			return (
-				<div className="word" key={i}>
-					{wordsCompArr}
-				</div>
-			);
-		});
+	type Char = {
+		char: string;
+		timeTyped: number | null;
+		correct: boolean | null;
+		untyped: boolean;
+		extra: boolean;
 	};
 
+	function wordDiff(word1: string, word2: string): Char[] {
+		let result: Char[] = [];
+		for (let i = 0; i < Math.max(word1.length, word2.length); i++) {
+			let char1 = word1[i];
+			let char2 = word2[i];
+
+			if (char1 === undefined) {
+				result.push({
+					char: char2,
+					timeTyped: null,
+					correct: null,
+					untyped: true,
+					extra: false,
+				});
+			} else if (char2 === undefined) {
+				result.push({
+					char: char1,
+					timeTyped: Date.now(),
+					correct: false,
+					untyped: false,
+					extra: true,
+				});
+			} else if (char1 === char2) {
+				result.push({
+					char: char1,
+					timeTyped: Date.now(),
+					correct: true,
+					untyped: false,
+					extra: false,
+				});
+			} else if (char1 !== char2) {
+				result.push({
+					char: char2,
+					timeTyped: Date.now(),
+					correct: false,
+					untyped: false,
+					extra: false,
+				});
+			}
+		}
+
+		return result;
+	}
+
 	return (
-		<div className="words-container">
-			{wordsMapped()}
-			<div className="carot" ref={carotRef}></div>
+		<div>
+			<Caret ref={caretRef} />
+			<InputField onKeyDown={handleKeyDown} tabIndex={0}>
+				{text.split(` `).map((word, i) => {
+					const diff = wordDiff(input.split(` `)[i] || ``, word);
+
+					return (
+						<span key={i}>
+							{diff.map((char, j) => {
+								let color = `black`;
+								if (char.untyped) color = `#888`;
+								if (char.correct === false) color = `red`;
+								if (char.extra) color = `maroon`;
+
+								return (
+									<span key={`${i}-${j}`} style={{ color }} ref={char.untyped ? null : lettertRef}>
+										{char.char}
+									</span>
+								);
+							})}
+						</span>
+					);
+				})}
+			</InputField>
 		</div>
 	);
 };
-
-/**
- * TODO: MAKE BACKSPACE WORK
- * TODO: MAKE CAROT MOVE TO THE LEFT OF THE LAST CHARACTER IN THE WORD, INSTEAD OF TELEPORTING TO THE BEGINNING
- * TODO: PUT WORD COUNTER
- */
