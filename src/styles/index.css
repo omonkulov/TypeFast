@@ -8,6 +8,13 @@ html body {
 	padding: 0px;
 }
 
+.color-picker {
+	border: 0px;
+	border: none;
+	background-color: rgba(127, 255, 212, 0);
+	height: 40px;
+}
+
 @keyframes flickerAnimation {
 	0% {
 		opacity: 1;

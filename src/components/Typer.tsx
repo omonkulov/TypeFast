@@ -57,7 +57,6 @@ export const Typer: React.FC<Props> = ({ text }) => {
 		}
 	}
 
-	console.log(themeContext);
 	type Char = {
 		char: string;
 		timeTyped: number | null;
