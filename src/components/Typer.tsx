@@ -15,31 +15,40 @@ export const Typer: React.FC<Args> = ({ wordsArr, numOfChars }) => {
 	const [numOfSpacePressed, setNumOfSpacePressed] = useState<number>(0);
 	const [isSpaceMissed, setIsSpaceMissed] = useState<boolean>(false);
 	const [isExtraKeyPressed, setIsExtraKeyPressed] = useState<boolean>(false);
+	const [isDeleteKeyPressed, setIsDeleteKeyPressed] = useState<boolean>(false);
 	const [isValidKeyPressed, setIsValidKeyPressed] = useState<boolean>(false);
 	const [pressedKey, setPressedKey] = useState<string>("");
+	const [reset, setReset] = useState<boolean>(true);
 
-	//Once WordsArr is initialzied, create a queue
-	//Then set it in worQueue State
+	//Reset the word queue
 	useEffect(() => {
-		let initQueue = [];
-		if (!wordsArr[0]) return;
-		for (let i = 0; i < wordsArr.length; i++) {
-			const word = wordsArr[i];
-			let initLetersArr = [];
-			for (let j = 0; j < word.length; j++) {
-				initLetersArr.push({
-					letter: word[j],
-					pressedKey: null,
-					pressedTime: null,
-					isNext: i === 0 && j === i,
-					isPassed: false,
-					isExtra: false,
-					isCorrect: false,
-				});
+		if (reset) {
+			setReset(false);
+			let initQueue = [];
+			if (!wordsArr[0]) return;
+			for (let i = 0; i < wordsArr.length; i++) {
+				const word = wordsArr[i];
+				let initLetersArr = [];
+				for (let j = 0; j < word.length; j++) {
+					initLetersArr.push({
+						letter: word[j],
+						pressedKey: null,
+						pressedTime: null,
+						isNext: i === 0 && j === i,
+						isPassed: false,
+						isExtra: false,
+						isCorrect: false,
+					});
+				}
+				initQueue.push(initLetersArr);
 			}
-			initQueue.push(initLetersArr);
+			setWordQueue([...initQueue]);
 		}
-		setWordQueue(initQueue);
+	}, [wordsArr, reset, numOfKeysPressed]);
+
+	//First time trigger reset
+	useEffect(() => {
+		setReset(true);
 	}, [wordsArr]);
 
 	//Checks if user missed space, if yes start adding the extra characters
@@ -48,21 +57,31 @@ export const Typer: React.FC<Args> = ({ wordsArr, numOfChars }) => {
 			wordQueue[numOfSpacePressed] &&
 			numOfKeysPressed >= wordQueue[numOfSpacePressed].length
 		) {
-			console.log("Start adding characters");
 			setIsSpaceMissed(true);
 		}
 	}, [numOfKeysPressed, numOfSpacePressed, wordQueue]);
 
+	//Debug
 	useEffect(() => {
 		console.log(wordQueue);
 	}, [wordQueue]);
 
+	//Carot's position
 	useEffect(() => {
+		if (lettertRef.current?.className.includes("extra")) {
+			carotRef.current?.setAttribute(
+				"style",
+				`position: absolute; top: ${lettertRef.current?.offsetTop}px; left: ${
+					lettertRef.current?.offsetLeft + 8
+				}px;`
+			);
+			return;
+		}
 		carotRef.current?.setAttribute(
 			"style",
 			`position: absolute; top: ${lettertRef.current?.offsetTop}px; left: ${lettertRef.current?.offsetLeft}px;`
 		);
-	}, [numOfKeysPressed]);
+	}, [numOfKeysPressed, numOfSpacePressed, wordQueue]);
 
 	//Valid Key Pressed
 	useLayoutEffect(() => {
@@ -72,7 +91,6 @@ export const Typer: React.FC<Args> = ({ wordsArr, numOfChars }) => {
 			let worQueueTemp = wordQueue;
 			let wordArrTemp = worQueueTemp[numOfSpacePressed];
 			let letterTemp = wordArrTemp[numOfKeysPressed].letter;
-			console.log(letterTemp);
 			wordArrTemp[numOfKeysPressed] = {
 				...wordArrTemp[numOfKeysPressed],
 				pressedKey: pressedKey,
@@ -107,11 +125,15 @@ export const Typer: React.FC<Args> = ({ wordsArr, numOfChars }) => {
 			setIsExtraKeyPressed(false);
 			let worQueueTemp = wordQueue;
 			let wordArrTemp = worQueueTemp[numOfSpacePressed];
+			wordArrTemp[wordArrTemp.length - 1] = {
+				...wordArrTemp[wordArrTemp.length - 1],
+				isNext: false,
+			};
 			wordArrTemp.push({
 				letter: pressedKey,
 				pressedKey: pressedKey,
 				pressedTime: Date.now(),
-				isNext: false,
+				isNext: true,
 				isPassed: true,
 				isExtra: true,
 				isCorrect: false,
@@ -127,18 +149,47 @@ export const Typer: React.FC<Args> = ({ wordsArr, numOfChars }) => {
 		isExtraKeyPressed,
 	]);
 
+	//Backspace pressed
+	useEffect(() => {
+		if (isDeleteKeyPressed) {
+			if (wordQueue[0] === undefined) return;
+			setIsDeleteKeyPressed(false);
+			let worQueueTemp = wordQueue;
+			let wordArrTemp = worQueueTemp[numOfSpacePressed];
+			let lettterTemp = wordArrTemp[numOfKeysPressed];
+			if (lettterTemp && !lettterTemp.isExtra) {
+			}
+		}
+	}, [isDeleteKeyPressed, numOfKeysPressed, wordQueue, numOfSpacePressed]);
+
+	//Check if finished
+	useEffect(() => {
+		if (wordQueue[0] === undefined) return;
+		if (numOfSpacePressed >= wordQueue.length) {
+			setReset(true);
+			setNumOfSpacePressed(0);
+			setNumOfKeysPressed(0);
+		}
+	}, [numOfSpacePressed, wordQueue]);
+
+	//Keypress Hook
 	useKeyPress((key: string) => {
-		//Spacebar pressed
 		if (key === " ") {
+			if (wordQueue[0] === undefined) return;
+			if (numOfSpacePressed >= wordQueue.length) {
+				setReset(true);
+				setNumOfSpacePressed(0);
+				setNumOfKeysPressed(0);
+				return;
+			}
 			setNumOfSpacePressed((prev) => prev + 1);
 			setNumOfKeysPressed(0);
 			setIsSpaceMissed(false);
-		}
-		//Backspace pressed
-		else if (key === "Backspace") {
-			console.log("backspace");
+		} else if (key === "Backspace") {
+			setIsDeleteKeyPressed(true);
 		} else {
 			if (isSpaceMissed) {
+				setPressedKey(key);
 				setIsExtraKeyPressed(true);
 			} else {
 				setPressedKey(key);
@@ -161,11 +212,14 @@ export const Typer: React.FC<Args> = ({ wordsArr, numOfChars }) => {
 				} else if (obj.isNext) {
 					classNamesD = "next";
 				}
+				if (obj.isExtra) {
+					classNamesD += " extra";
+				}
 
 				return (
 					<span
 						key={j}
-						className={classNamesD}
+						className={"letter-margin " + classNamesD}
 						ref={obj.isNext ? lettertRef : null}
 					>
 						{obj.letter}
