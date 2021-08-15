@@ -1,15 +1,13 @@
 import React from "react";
-import { useState, useEffect, useRef } from "react";
-import styled from "styled-components";
+import { useState, useEffect, useRef, useContext } from "react";
+import styled, { ThemeContext } from "styled-components";
 
 const InputField = styled.p`
-	background-color: #ddd;
+	background-color: ${(props) => props.theme.background};
 	width: 50rem;
 	height: 10rem;
 	margin: 2rem auto;
 	padding: 1rem;
-	border-radius: 10px;
-	border: 2px solid #555;
 	transition: all 0.3s;
 	font-size: 1.5rem;
 	font-family: Consolas;
@@ -20,17 +18,16 @@ const InputField = styled.p`
 
 	&:focus {
 		outline: none;
-		background-color: #e1e3f7;
-		border: 2px solid #7622e3;
+		background-color: ${(props) => props.theme.foreground};
+		border: 2px solid ${(props) => props.theme.foreground};
 	}
 `;
 
 const Caret = styled.div`
-	min-width: 2px;
+	min-width: 0.3rem;
 	min-height: 1.5rem;
-	background-color: rgb(57, 85, 241);
+	background-color: ${(props) => props.theme.main};
 	position: absolute;
-	transform: tanslate(100%, -50%);
 `;
 
 interface Props {
@@ -41,7 +38,7 @@ export const Typer: React.FC<Props> = ({ text }) => {
 	//Me
 	const caretRef = useRef<HTMLDivElement>(null);
 	const lettertRef = useRef<HTMLDivElement>(null);
-
+	const themeContext = useContext(ThemeContext);
 	const [input, setInput] = useState(``);
 
 	useEffect(() => {
@@ -60,6 +57,7 @@ export const Typer: React.FC<Props> = ({ text }) => {
 		}
 	}
 
+	console.log(themeContext);
 	type Char = {
 		char: string;
 		timeTyped: number | null;
@@ -114,7 +112,7 @@ export const Typer: React.FC<Props> = ({ text }) => {
 
 	return (
 		<div>
-			<Caret ref={caretRef} />
+			<Caret ref={caretRef} className="animate-flicker" />
 			<InputField onKeyDown={handleKeyDown} tabIndex={0}>
 				{text.split(` `).map((word, i) => {
 					const diff = wordDiff(input.split(` `)[i] || ``, word);
@@ -122,10 +120,10 @@ export const Typer: React.FC<Props> = ({ text }) => {
 					return (
 						<span key={i}>
 							{diff.map((char, j) => {
-								let color = `black`;
-								if (char.untyped) color = `#888`;
-								if (char.correct === false) color = `red`;
-								if (char.extra) color = `maroon`;
+								let color = themeContext.correct;
+								if (char.untyped) color = themeContext.untyped;
+								if (char.correct === false) color = themeContext.wrong;
+								if (char.extra) color = themeContext.extra;
 
 								return (
 									<span key={`${i}-${j}`} style={{ color }} ref={char.untyped ? null : lettertRef}>
