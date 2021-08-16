@@ -2,9 +2,7 @@ import React from "react";
 import { useState, useEffect, useRef, useContext } from "react";
 import styled, { ThemeContext } from "styled-components";
 
-const TyperWrapper = styled.div`
-	background-color: aquamarine;
-`;
+const TyperWrapper = styled.div``;
 
 const InputField = styled.p`
 	background-color: ${(props) => props.theme.background};
@@ -15,10 +13,9 @@ const InputField = styled.p`
 	transition: all 0.3s;
 	font-size: 1.5rem;
 	font-family: Consolas;
-
 	display: flex;
 	flex-wrap: wrap;
-	column-gap: 1ch;
+	column-gap: 12px;
 
 	&:focus {
 		outline: none;
@@ -28,8 +25,8 @@ const InputField = styled.p`
 `;
 
 const Caret = styled.div`
-	min-width: 0.3rem;
-	min-height: 1.5rem;
+	width: 0.2rem;
+	height: 1.5rem;
 	background-color: ${(props) => props.theme.main};
 	position: absolute;
 `;
@@ -49,7 +46,15 @@ export const Typer: React.FC<Props> = ({ text }) => {
 	useEffect(() => {
 		if (caretRef.current && lettertRef.current) {
 			caretRef.current.style.top = `${lettertRef.current?.offsetTop}px`;
-			caretRef.current.style.left = `${lettertRef.current?.offsetLeft + 10}px`;
+			console.log(input[input.length] === " ", input[input.length - 1]);
+
+			if (input[input.length - 1] === " ") {
+				caretRef.current.style.left = `${
+					lettertRef.current?.offsetLeft + lettertRef.current?.offsetWidth + 12
+				}px`;
+			} else {
+				caretRef.current.style.left = `${lettertRef.current?.offsetLeft + lettertRef.current?.offsetWidth}px`;
+			}
 		}
 	}, [lettertRef, caretRef, input]);
 
@@ -114,12 +119,19 @@ export const Typer: React.FC<Props> = ({ text }) => {
 		return result;
 	}
 
+	let charTrack = -1;
 	return (
 		<TyperWrapper>
 			<Caret ref={caretRef} className="animate-flicker" />
 			<InputField onKeyDown={handleKeyDown} tabIndex={0}>
 				{text.split(` `).map((word, i) => {
-					const diff = wordDiff(input.split(` `)[i] || ``, word);
+					const diff = wordDiff(
+						input
+							.replace(/\s{2,}/g, "")
+							.trim()
+							.split(` `)[i] || ``,
+						word
+					);
 
 					return (
 						<span key={i}>
@@ -128,9 +140,15 @@ export const Typer: React.FC<Props> = ({ text }) => {
 								if (char.untyped) color = themeContext.untyped;
 								if (char.correct === false) color = themeContext.wrong;
 								if (char.extra) color = themeContext.extra;
+								charTrack++;
 
 								return (
-									<span key={`${i}-${j}`} style={{ color }} ref={char.untyped ? null : lettertRef}>
+									<span
+										id={`${charTrack}`}
+										key={`${i}-${j}`}
+										style={{ color }}
+										ref={!char.untyped ? lettertRef : null}
+									>
 										{char.char}
 									</span>
 								);

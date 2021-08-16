@@ -17,13 +17,13 @@ type themeObj = {
 };
 
 const defaultTheme = {
-	background: "white",
-	foreground: "white",
-	main: "yellow",
-	untyped: "gray",
-	correct: "black",
-	wrong: "red",
-	extra: "dark-red",
+	background: "#323437",
+	foreground: "#292a2d",
+	main: "#e2b71a",
+	untyped: "#646669",
+	correct: "#d1d0c5",
+	wrong: "#ca4754",
+	extra: "#7e2a33",
 };
 
 const AppDiv = styled.div`
