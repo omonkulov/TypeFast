@@ -152,6 +152,10 @@ export const Typer: React.FC<Props> = ({ text }) => {
 										id={`${charTrack}`}
 										key={`${i}-${j}`}
 										style={{ color }}
+										//Every character is assgned a number starting from 0
+										//If the input's length (without spaces) equals to the given number
+										//It will assign the letterRef, which will be used in use effect to
+										//assign caret's positon
 										ref={charTrack === input.replace(/\s/g, "").length - 1 ? lettertRef : null}
 									>
 										{char.char}
