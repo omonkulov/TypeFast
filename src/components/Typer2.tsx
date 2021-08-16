@@ -1,7 +1,7 @@
 import React from "react";
 import { useState, useEffect, useRef, useContext } from "react";
 import styled, { ThemeContext, css } from "styled-components";
-import useTyping from "react-typing-game-hook";
+import useTyping from "react-typing-game-hook-v2";
 import { useMemo } from "react";
 
 const CaretSpan = styled.span`
