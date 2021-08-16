@@ -43,16 +43,23 @@ const NavDiv = styled.div`
 
 const NotesDiv = styled.div`
 	gird-area: noteslist;
-	background: red;
 `;
+
 const TyperDiv = styled.div`
 	grid-area: typer;
 	display: flex;
 	justify-content: center;
 	align-items: center;
 `;
+
+type noteObj = {
+	title: string;
+	body: string;
+};
+
 function App() {
 	const [theme, setTheme] = useState<themeObj>(defaultTheme);
+	const [note, setNote] = useState<noteObj>({ title: "Default", body: "This is a default text" });
 
 	return (
 		<ThemeProvider theme={theme}>
@@ -61,10 +68,10 @@ function App() {
 					<NavBar />
 				</NavDiv>
 				<NotesDiv>
-					<NotesList />
+					<NotesList setNote={setNote} />
 				</NotesDiv>
 				<TyperDiv>
-					<Typer text="In publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate the visual form of a document or a typeface without" />
+					<Typer note={note} />
 				</TyperDiv>
 			</AppDiv>
 		</ThemeProvider>

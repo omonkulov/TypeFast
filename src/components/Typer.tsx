@@ -32,10 +32,13 @@ const Caret = styled.div`
 `;
 
 interface Props {
-	text: string;
+	note: {
+		title: string;
+		body: string;
+	};
 }
 
-export const Typer: React.FC<Props> = ({ text }) => {
+export const Typer: React.FC<Props> = ({ note }) => {
 	//Ref for the cursor
 	const caretRef = useRef<HTMLDivElement>(null);
 	//Ref for the last typed letter
@@ -45,6 +48,12 @@ export const Typer: React.FC<Props> = ({ text }) => {
 	//User's Input
 	const [input, setInput] = useState(``);
 
+	//Everytime Note is updated, reset everything
+	useEffect(() => {
+		setInput("");
+	}, [note]);
+
+	//Change positon of caret everytime input is updated
 	useEffect(() => {
 		if (caretRef.current && lettertRef.current) {
 			caretRef.current.style.top = `${lettertRef.current?.offsetTop}px`;
@@ -128,9 +137,10 @@ export const Typer: React.FC<Props> = ({ text }) => {
 	let charTrack = -1;
 	return (
 		<TyperWrapper>
+			<h3>{note.title}</h3>
 			<Caret ref={caretRef} className="animate-flicker" />
 			<InputField onKeyDown={handleKeyDown} tabIndex={0}>
-				{text.split(` `).map((word, i) => {
+				{note.body.split(` `).map((word, i) => {
 					const diff = wordDiff(
 						input
 							.replace(/\s{2,}/g, "")
