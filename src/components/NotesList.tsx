@@ -25,6 +25,7 @@ type note = {
 interface Props {
 	setNote: React.Dispatch<React.SetStateAction<note>>;
 }
+//Examples
 const exmaple = [
 	{
 		title: "Dominican Restoration War",
