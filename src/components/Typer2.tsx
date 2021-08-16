@@ -35,7 +35,6 @@ export const Typer2: React.FC<Props> = ({ note }) => {
 	const [isFocused, setIsFocused] = useState(false);
 	const letterElements = useRef<HTMLDivElement>(null);
 	const themeContext = useContext(ThemeContext);
-
 	const {
 		states: { charsState, currIndex },
 		actions: { insertTyping, deleteTyping, resetTyping },
