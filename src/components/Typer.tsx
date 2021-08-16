@@ -36,18 +36,25 @@ interface Props {
 }
 
 export const Typer: React.FC<Props> = ({ text }) => {
-	//Me
+	//Ref for the cursor
 	const caretRef = useRef<HTMLDivElement>(null);
+	//Ref for the last typed letter
 	const lettertRef = useRef<HTMLDivElement>(null);
+	//Theme
 	const themeContext = useContext(ThemeContext);
-
+	//User's Input
 	const [input, setInput] = useState(``);
 
 	useEffect(() => {
 		if (caretRef.current && lettertRef.current) {
 			caretRef.current.style.top = `${lettertRef.current?.offsetTop}px`;
-			console.log(input[input.length] === " ", input[input.length - 1]);
-
+			console.log(
+				input
+					.replace(/\s{2,}/g, "")
+					.trim()
+					.split(" ")
+			);
+			console.log();
 			if (input[input.length - 1] === " ") {
 				caretRef.current.style.left = `${
 					lettertRef.current?.offsetLeft + lettertRef.current?.offsetWidth + 12
@@ -80,7 +87,6 @@ export const Typer: React.FC<Props> = ({ text }) => {
 		for (let i = 0; i < Math.max(word1.length, word2.length); i++) {
 			let char1 = word1[i];
 			let char2 = word2[i];
-
 			if (char1 === undefined) {
 				result.push({
 					char: char2,
@@ -141,13 +147,12 @@ export const Typer: React.FC<Props> = ({ text }) => {
 								if (char.correct === false) color = themeContext.wrong;
 								if (char.extra) color = themeContext.extra;
 								charTrack++;
-
 								return (
 									<span
 										id={`${charTrack}`}
 										key={`${i}-${j}`}
 										style={{ color }}
-										ref={!char.untyped ? lettertRef : null}
+										ref={charTrack === input.replace(/\s/g, "").length - 1 ? lettertRef : null}
 									>
 										{char.char}
 									</span>
