@@ -1,10 +1,9 @@
 import React from "react";
 import { useState } from "react";
 import styled, { ThemeProvider } from "styled-components";
-import { Typer } from "./components/Typer";
-import { Settings } from "./pages/Settings";
 import { NavBar } from "./components/NavBar";
 import { NotesList } from "./components/NotesList";
+import { Typer2 } from "./components/Typer2";
 
 type themeObj = {
 	background: string;
@@ -71,7 +70,7 @@ function App() {
 					<NotesList setNote={setNote} />
 				</NotesDiv>
 				<TyperDiv>
-					<Typer note={note} />
+					<Typer2 note={note} />
 				</TyperDiv>
 			</AppDiv>
 		</ThemeProvider>

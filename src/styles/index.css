@@ -14,57 +14,21 @@ body {
 	height: 40px;
 }
 
-.testCaret {
-	border-left: 2px solid red;
+.not-curr-letter {
+	border: unset !important;
 }
-/*Animation Caret*/
-@keyframes flickerAnimation {
-	0% {
-		opacity: 1;
-	}
-	50% {
-		opacity: 0;
-	}
+.curr-letter {
+	box-sizing: border-box;
+	animation: flash 0.7s infinite;
+}
+
+@keyframes flash {
+	0%,
 	100% {
-		opacity: 1;
+		border-left-style: inset;
 	}
-}
-@-o-keyframes flickerAnimation {
-	0% {
-		opacity: 1;
-	}
+
 	50% {
-		opacity: 0;
+		border-left-style: solid;
 	}
-	100% {
-		opacity: 1;
-	}
-}
-@-moz-keyframes flickerAnimation {
-	0% {
-		opacity: 1;
-	}
-	50% {
-		opacity: 0;
-	}
-	100% {
-		opacity: 1;
-	}
-}
-@-webkit-keyframes flickerAnimation {
-	0% {
-		opacity: 1;
-	}
-	50% {
-		opacity: 0;
-	}
-	100% {
-		opacity: 1;
-	}
-}
-.animate-flicker {
-	-webkit-animation: flickerAnimation 0.8s infinite;
-	-moz-animation: flickerAnimation 0.8s infinite;
-	-o-animation: flickerAnimation 0.8s infinite;
-	animation: flickerAnimation 0.8s infinite;
 }
