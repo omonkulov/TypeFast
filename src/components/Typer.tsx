@@ -2,6 +2,10 @@ import React from "react";
 import { useState, useEffect, useRef, useContext } from "react";
 import styled, { ThemeContext } from "styled-components";
 
+const TyperWrapper = styled.div`
+	background-color: aquamarine;
+`;
+
 const InputField = styled.p`
 	background-color: ${(props) => props.theme.background};
 	width: 50rem;
@@ -39,6 +43,7 @@ export const Typer: React.FC<Props> = ({ text }) => {
 	const caretRef = useRef<HTMLDivElement>(null);
 	const lettertRef = useRef<HTMLDivElement>(null);
 	const themeContext = useContext(ThemeContext);
+
 	const [input, setInput] = useState(``);
 
 	useEffect(() => {
@@ -110,7 +115,7 @@ export const Typer: React.FC<Props> = ({ text }) => {
 	}
 
 	return (
-		<div>
+		<TyperWrapper>
 			<Caret ref={caretRef} className="animate-flicker" />
 			<InputField onKeyDown={handleKeyDown} tabIndex={0}>
 				{text.split(` `).map((word, i) => {
@@ -134,6 +139,6 @@ export const Typer: React.FC<Props> = ({ text }) => {
 					);
 				})}
 			</InputField>
-		</div>
+		</TyperWrapper>
 	);
 };

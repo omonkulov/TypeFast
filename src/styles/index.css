@@ -1,11 +1,10 @@
-html body {
-	margin: 0px;
-	padding: 0px;
+* {
+	margin: 0;
+	padding: 0;
 }
 
-#root {
-	margin: 0px;
-	padding: 0px;
+body {
+	font-family: monospace;
 }
 
 .color-picker {
@@ -15,6 +14,7 @@ html body {
 	height: 40px;
 }
 
+/*Animation Caret*/
 @keyframes flickerAnimation {
 	0% {
 		opacity: 1;
