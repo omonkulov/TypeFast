@@ -3,7 +3,9 @@ import { useState, useEffect } from "react";
 import styled, { ThemeProvider } from "styled-components";
 import { NavBar } from "./components/NavBar";
 import { NotesList } from "./components/NotesList";
-import { Typer2 } from "./components/Typer2";
+import { Typer } from "./components/Typer";
+import { BrowserRouter, Route } from "react-router-dom";
+import { Settings } from "./pages/Settings";
 
 type themeObj = {
 	background: string;
@@ -12,7 +14,6 @@ type themeObj = {
 	untyped: string;
 	correct: string;
 	wrong: string;
-	extra: string;
 };
 
 const defaultTheme = {
@@ -22,7 +23,6 @@ const defaultTheme = {
 	untyped: "#646669",
 	correct: "#d1d0c5",
 	wrong: "#ca4754",
-	extra: "#7e2a33",
 };
 
 const AppDiv = styled.div`
@@ -34,6 +34,7 @@ const AppDiv = styled.div`
 	grid-template:
 		"nav nav" auto
 		"noteslist typer" 1fr / auto 1fr;
+	overflow: hidden;
 `;
 
 const NavDiv = styled.div`
@@ -44,11 +45,13 @@ const NotesDiv = styled.div`
 	gird-area: noteslist;
 `;
 
-const TyperDiv = styled.div`
+const MainDiv = styled.div`
 	grid-area: typer;
 	display: flex;
 	justify-content: center;
 	align-items: center;
+	overflow-x: hidden;
+	overflow-y: auto;
 `;
 
 type noteObj = {
@@ -68,18 +71,28 @@ function App() {
 	}, [test]);
 
 	return (
-		<ThemeProvider theme={theme}>
-			<AppDiv>
-				<NavDiv>
-					<NavBar />
-				</NavDiv>
-				<NotesDiv>
-					{" "}
-					<NotesList setNote={setNote} setTest={setTest} />{" "}
-				</NotesDiv>
-				<TyperDiv>{!test ? <Typer2 note={note} /> : null}</TyperDiv>
-			</AppDiv>
-		</ThemeProvider>
+		<BrowserRouter>
+			<ThemeProvider theme={theme}>
+				<AppDiv>
+					<NavDiv>
+						<NavBar />
+					</NavDiv>
+					<NotesDiv>
+						<NotesList setNote={setNote} setTest={setTest} />
+					</NotesDiv>
+					<MainDiv>
+						<Route path="/" exact>
+							{!test ? <Typer note={note} /> : null}
+						</Route>
+						<Route path="/settings">
+							<Settings setThemes={setTheme} />
+						</Route>
+						<Route path="/collection"></Route>
+						<Route path="/quiz"></Route>
+					</MainDiv>
+				</AppDiv>
+			</ThemeProvider>
+		</BrowserRouter>
 	);
 }
 

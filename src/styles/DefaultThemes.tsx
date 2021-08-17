@@ -1,0 +1,60 @@
+const DefaultThemes = [
+	{
+		background: "#323437",
+		foreground: "#292a2d",
+		main: "#e2b71a",
+		untyped: "#646669",
+		correct: "#d1d0c5",
+		wrong: "#ca4754",
+	},
+	{
+		background: "#322921",
+		foreground: "#3e3329",
+		main: "#e2b71a",
+		untyped: "#646669",
+		correct: "#CCAF9B",
+		wrong: "#ca4754",
+	},
+	{
+		background: "#323437",
+		foreground: "#292a2d",
+		main: "#e2b71a",
+		untyped: "#CCAF9B",
+		correct: "#d1d0c5",
+		wrong: "#CB132C",
+	},
+	{
+		background: "#323437",
+		foreground: "#292a2d",
+		main: "#e2b71a",
+		untyped: "#646669",
+		correct: "#d1d0c5",
+		wrong: "#ca4754",
+	},
+	{
+		background: "#323437",
+		foreground: "#292a2d",
+		main: "#e2b71a",
+		untyped: "#646669",
+		correct: "#d1d0c5",
+		wrong: "#ca4754",
+	},
+	{
+		background: "#323437",
+		foreground: "#292a2d",
+		main: "#e2b71a",
+		untyped: "#646669",
+		correct: "#d1d0c5",
+		wrong: "#ca4754",
+	},
+	{
+		background: "#323437",
+		foreground: "#292a2d",
+		main: "#e2b71a",
+		untyped: "#646669",
+		correct: "#d1d0c5",
+		wrong: "#ca4754",
+	},
+];
+
+export default DefaultThemes;

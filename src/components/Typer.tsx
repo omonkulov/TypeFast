@@ -1,34 +1,33 @@
 import React from "react";
-import { useState, useEffect, useRef, useContext } from "react";
+import { useState, useRef, useContext } from "react";
 import styled, { ThemeContext } from "styled-components";
+import useTyping from "react-typing-game-hook-v2";
 
-const TyperWrapper = styled.div``;
-
-const InputField = styled.p`
-	background-color: ${(props) => props.theme.background};
+const CaretSpan = styled.span`
+	border-left: 0.2rem solid ${(props) => props.theme.main};
+`;
+const InputFieldDiv = styled.div`
+	background-color: ${(props) => props.theme.foreground};
 	width: 50rem;
-	height: 10rem;
+	height: 50vh;
 	margin: 2rem auto;
 	padding: 1rem;
 	transition: all 0.3s;
-	font-size: 1.5rem;
+	font-size: 2rem;
 	font-family: Consolas;
-	display: flex;
-	flex-wrap: wrap;
-	column-gap: 12px;
-
+	outline: none;
+	position: relative;
 	&:focus {
 		outline: none;
-		background-color: ${(props) => props.theme.foreground};
-		border: 2px solid ${(props) => props.theme.foreground};
+		background-color: ${(props) => props.theme.background};
 	}
 `;
 
-const Caret = styled.div`
-	width: 0.2rem;
-	height: 1.5rem;
-	background-color: ${(props) => props.theme.main};
-	position: absolute;
+const TitleP = styled.p`
+	font-size: 2.2rem;
+	margin: 10px 0px;
+	text-align: center;
+	color: ${(props) => props.theme.correct};
 `;
 
 interface Props {
@@ -39,143 +38,65 @@ interface Props {
 }
 
 export const Typer: React.FC<Props> = ({ note }) => {
-	//Ref for the cursor
-	const caretRef = useRef<HTMLDivElement>(null);
-	//Ref for the last typed letter
-	const lettertRef = useRef<HTMLDivElement>(null);
-	//Theme
+	const [isFocused, setIsFocused] = useState(false);
+	const letterElements = useRef<HTMLDivElement>(null);
 	const themeContext = useContext(ThemeContext);
-	//User's Input
-	const [input, setInput] = useState(``);
+	const {
+		states: { charsState, currIndex },
+		actions: { insertTyping, deleteTyping, resetTyping },
+	} = useTyping(note.body, { skipCurrentWordOnSpace: true, pauseOnError: false });
 
-	//Everytime Note is updated, reset everything
-	useEffect(() => {
-		setInput("");
-	}, [note]);
-
-	//Change positon of caret everytime input is updated
-	useEffect(() => {
-		if (caretRef.current && lettertRef.current) {
-			caretRef.current.style.top = `${lettertRef.current?.offsetTop}px`;
-			console.log(
-				input
-					.replace(/\s{2,}/g, "")
-					.trim()
-					.split(" ")
-			);
-			console.log();
-			if (input[input.length - 1] === " ") {
-				caretRef.current.style.left = `${
-					lettertRef.current?.offsetLeft + lettertRef.current?.offsetWidth + 12
-				}px`;
-			} else {
-				caretRef.current.style.left = `${lettertRef.current?.offsetLeft + lettertRef.current?.offsetWidth}px`;
-			}
+	//handle key presses
+	const handleKeyDown = (letter: string, control: boolean) => {
+		if (letter === "Escape") {
+			resetTyping();
+		} else if (letter === "Backspace") {
+			deleteTyping(control);
+		} else if (letter.length === 1) {
+			insertTyping(letter);
 		}
-	}, [lettertRef, caretRef, input]);
-
-	function handleKeyDown(evt: React.KeyboardEvent<HTMLDivElement>) {
-		if (evt.ctrlKey || evt.altKey || evt.metaKey) return;
-		if (evt.key.length === 1) {
-			setInput((input) => input + evt.key);
-		} else if (evt.key === `Backspace`) {
-			setInput((input) => input.slice(0, -1));
-		}
-	}
-
-	type Char = {
-		char: string;
-		timeTyped: number | null;
-		correct: boolean | null;
-		untyped: boolean;
-		extra: boolean;
 	};
 
-	function wordDiff(word1: string, word2: string): Char[] {
-		let result: Char[] = [];
-		for (let i = 0; i < Math.max(word1.length, word2.length); i++) {
-			let char1 = word1[i];
-			let char2 = word2[i];
-			if (char1 === undefined) {
-				result.push({
-					char: char2,
-					timeTyped: null,
-					correct: null,
-					untyped: true,
-					extra: false,
-				});
-			} else if (char2 === undefined) {
-				result.push({
-					char: char1,
-					timeTyped: Date.now(),
-					correct: false,
-					untyped: false,
-					extra: true,
-				});
-			} else if (char1 === char2) {
-				result.push({
-					char: char1,
-					timeTyped: Date.now(),
-					correct: true,
-					untyped: false,
-					extra: false,
-				});
-			} else if (char1 !== char2) {
-				result.push({
-					char: char2,
-					timeTyped: Date.now(),
-					correct: false,
-					untyped: false,
-					extra: false,
-				});
-			}
-		}
-
-		return result;
-	}
-
-	let charTrack = -1;
 	return (
-		<TyperWrapper>
-			<h3>{note.title}</h3>
-			<Caret ref={caretRef} className="animate-flicker" />
-			<InputField onKeyDown={handleKeyDown} tabIndex={0}>
-				{note.body.split(` `).map((word, i) => {
-					const diff = wordDiff(
-						input
-							.replace(/\s{2,}/g, "")
-							.trim()
-							.split(` `)[i] || ``,
-						word
-					);
-
+		<div>
+			<TitleP>{note.title}</TitleP>
+			<InputFieldDiv
+				ref={letterElements}
+				onKeyDown={(e) => handleKeyDown(e.key, e.ctrlKey)}
+				onFocus={() => setIsFocused(true)}
+				onBlur={() => setIsFocused(false)}
+				tabIndex={0}
+			>
+				{note.body.split("").map((char: string, index: number) => {
+					let state = charsState[index];
+					let color =
+						state === 0 ? themeContext.utyped : state === 1 ? themeContext.correct : themeContext.wrong;
+					let backgroundcolor = state === 2 && char === " " ? themeContext.wrong : "";
 					return (
-						<span key={i}>
-							{diff.map((char, j) => {
-								let color = themeContext.correct;
-								if (char.untyped) color = themeContext.untyped;
-								if (char.correct === false) color = themeContext.wrong;
-								if (char.extra) color = themeContext.extra;
-								charTrack++;
-								return (
-									<span
-										id={`${charTrack}`}
-										key={`${i}-${j}`}
-										style={{ color }}
-										//Every character is assgned a number starting from 0
-										//If the input's length (without spaces) equals to the given number
-										//It will assign the letterRef, which will be used in use effect to
-										//assign caret's positon
-										ref={charTrack === input.replace(/\s/g, "").length - 1 ? lettertRef : null}
-									>
-										{char.char}
-									</span>
-								);
-							})}
-						</span>
+						<CaretSpan
+							key={char + index}
+							style={{
+								color: color,
+								backgroundColor: backgroundcolor,
+								textDecorationColor: themeContext.main,
+							}}
+							className={currIndex + 1 === index && isFocused ? "curr-letter" : "not-curr-letter"}
+						>
+							{char}
+						</CaretSpan>
 					);
 				})}
-			</InputField>
-		</TyperWrapper>
+			</InputFieldDiv>
+		</div>
 	);
 };
+
+/**
+ * currChar     - the last typed character in string
+ * length       - the length of typed characters
+ * correctChar  - number of correct typed characters
+ * errorChar    - number of wrong typed characters
+ * phase        - 0: user didn't type yet   1:user typing     2: done typing
+ * startTinme   - time of start
+ * endTime      - time of finished
+ */
