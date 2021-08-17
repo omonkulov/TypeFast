@@ -24,6 +24,7 @@ type note = {
 
 interface Props {
 	setNote: React.Dispatch<React.SetStateAction<note>>;
+	setTest: React.Dispatch<React.SetStateAction<boolean>>;
 }
 //Examples
 const exmaple = [
@@ -40,7 +41,7 @@ const exmaple = [
 		body: "Soulouque was a general in the Haitian Army when he was appointed President of Haiti. He acquired autocratic powers, purged the army of the ruling elite, installed black loyalists in administrative positions and the nobility, and created a secret police and personal army. Soulouque was an enthusiastic vodouisant, maintaining a staff of bocors and mambos, and gave the stigmatized vodou religion semi-official status which was openly practiced in Port-au-Prince. Soulouque declared the Second Haitian Empire in 1849 after being proclaimed Emperor under the name Faustin I, and formally crowned in 1852. Several unsuccessful attempts to reconquer the Dominican Republic eroded his support and he abdicated in 1859 under pressure from General Fabre Geffrard and Dominican military victory.[2][3] Soulouque was temporarily exiled to Jamaica before returning to Haiti where he died in 1867.",
 	},
 ];
-export const NotesList: React.FC<Props> = ({ setNote }) => {
+export const NotesList: React.FC<Props> = ({ setNote, setTest }) => {
 	return (
 		<WrapperDiv>
 			<div>
@@ -51,7 +52,13 @@ export const NotesList: React.FC<Props> = ({ setNote }) => {
 			<div>
 				{exmaple.map((obj, i) => {
 					return (
-						<NoteP key={i} onClick={() => setNote(obj)}>
+						<NoteP
+							key={i}
+							onClick={() => {
+								setNote(obj);
+								setTest(true);
+							}}
+						>
 							{obj.title}
 						</NoteP>
 					);

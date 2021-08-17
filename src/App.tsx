@@ -1,5 +1,5 @@
 import React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styled, { ThemeProvider } from "styled-components";
 import { NavBar } from "./components/NavBar";
 import { NotesList } from "./components/NotesList";
@@ -59,6 +59,13 @@ type noteObj = {
 function App() {
 	const [theme, setTheme] = useState<themeObj>(defaultTheme);
 	const [note, setNote] = useState<noteObj>({ title: "Default", body: "This is a default text" });
+	const [test, setTest] = useState<boolean>(false);
+
+	useEffect(() => {
+		if (test) {
+			setTest(false);
+		}
+	}, [test]);
 
 	return (
 		<ThemeProvider theme={theme}>
@@ -67,11 +74,10 @@ function App() {
 					<NavBar />
 				</NavDiv>
 				<NotesDiv>
-					<NotesList setNote={setNote} />
+					{" "}
+					<NotesList setNote={setNote} setTest={setTest} />{" "}
 				</NotesDiv>
-				<TyperDiv>
-					<Typer2 note={note} />
-				</TyperDiv>
+				<TyperDiv>{!test ? <Typer2 note={note} /> : null}</TyperDiv>
 			</AppDiv>
 		</ThemeProvider>
 	);

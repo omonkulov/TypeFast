@@ -1,8 +1,7 @@
 import React from "react";
 import { useState, useEffect, useRef, useContext } from "react";
-import styled, { ThemeContext, css } from "styled-components";
+import styled, { ThemeContext } from "styled-components";
 import useTyping from "react-typing-game-hook-v2";
-import { useMemo } from "react";
 
 const CaretSpan = styled.span`
 	border-left: 0.2rem solid ${(props) => props.theme.main};
@@ -35,10 +34,19 @@ export const Typer2: React.FC<Props> = ({ note }) => {
 	const [isFocused, setIsFocused] = useState(false);
 	const letterElements = useRef<HTMLDivElement>(null);
 	const themeContext = useContext(ThemeContext);
+	const [pauseOnError, setPauseOnError] = useState(false);
 	const {
-		states: { charsState, currIndex },
+		states: { chars, charsState, currIndex },
 		actions: { insertTyping, deleteTyping, resetTyping },
-	} = useTyping(note.body, { skipCurrentWordOnSpace: false, pauseOnError: false });
+	} = useTyping(note.body, { skipCurrentWordOnSpace: false, pauseOnError });
+
+	useEffect(() => {
+		setPauseOnError(true);
+
+		setTimeout(() => {
+			setPauseOnError(false);
+		}, 100);
+	}, [note.body, setPauseOnError]);
 
 	//handle key presses
 	const handleKeyDown = (letter: string, control: boolean) => {
@@ -61,7 +69,7 @@ export const Typer2: React.FC<Props> = ({ note }) => {
 				onBlur={() => setIsFocused(false)}
 				tabIndex={0}
 			>
-				{note.body.split("").map((char: string, index: number) => {
+				{chars.split("").map((char: string, index: number) => {
 					let state = charsState[index];
 					let color =
 						state === 0 ? themeContext.utyped : state === 1 ? themeContext.correct : themeContext.wrong;
