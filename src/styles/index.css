@@ -14,6 +14,17 @@ th {
 	padding: 5px;
 	text-align: center;
 }
+.center {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+.center-columnDirection {
+	display: flex;
+	justify-content: center;
+	flex-direction: column;
+	margin: 4rem 0;
+}
 table {
 	display: flex;
 	flex-direction: column;
@@ -31,6 +42,13 @@ table {
 	cursor: pointer;
 }
 
+.margin-y {
+	margin: 4rem 0;
+}
+
+.paddingTyper {
+	padding: 5rem;
+}
 .color-picker {
 	border: 0px;
 	border: none;

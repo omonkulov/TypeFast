@@ -4,12 +4,12 @@ import styled from "styled-components";
 const WrapperDiv = styled.div`
 	padding: 5px;
 	min-width: 200px;
-	height: 99%;
-	background: ${(props) => props.theme.foreground};
+	height: 98%;
+	border-right: 5px solid ${(props) => props.theme.foreground};
 `;
 
 const SearchInput = styled.input`
-	background-color: rgba(0, 0, 0, 0);
+	background-color: ${(props) => props.theme.foreground};
 	color: white;
 `;
 

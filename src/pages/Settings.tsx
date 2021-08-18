@@ -9,8 +9,7 @@ import { throttle } from "lodash";
 const ColorDiv = styled.div`
 	height: 30px;
 	padding: 5px;
-	margin: auto 0px;
-	margin-top: 2px;
+	margin: auto 2px;
 	border: 1px solid grey;
 `;
 
@@ -20,9 +19,20 @@ const TableHeaderTH = styled.th`
 `;
 
 const TitleP = styled.p`
+	width: fit-content;
+	block-size: fit-content;
 	font-size: 2.2rem;
-	margin: 10px 0px;
+	margin: 6rem auto 20px auto;
 	text-align: center;
+	color: ${(props) => props.theme.correct};
+	border-bottom: 0.6rem solid ${(props) => props.theme.foreground};
+	border-radius: 2px;
+`;
+
+const OptionLabel = styled.label`
+	font-size: 1.2rem;
+	text-align: center;
+	margin-right: 5px;
 	color: ${(props) => props.theme.correct};
 `;
 
@@ -32,6 +42,29 @@ const ColorRowTR = styled.tr`
 		outline: 0.5px solid ${(props) => props.theme.main};
 	}
 `;
+
+const CaretSpan = styled.span`
+	border-left: 0.2rem solid ${(props) => props.theme.main};
+`;
+const InputFieldDiv = styled.div`
+	background-color: ${(props) => props.theme.background};
+	width: 90%;
+	margin: 2rem auto;
+	padding: 1rem;
+	transition: all 0.3s;
+	font-size: 2rem;
+	font-family: Consolas;
+	outline: none;
+	position: relative;
+	overflow-x: hidden;
+	overflow-y: auto;
+	text-align: center;
+	&:hover {
+		outline: none;
+		background-color: ${(props) => props.theme.foreground};
+	}
+`;
+
 type themeObj = {
 	background: string;
 	foreground: string;
@@ -41,11 +74,18 @@ type themeObj = {
 	wrong: string;
 };
 
+type typingPrefObj = {
+	skipWordsOnSpace: boolean;
+	pauseOnEror: boolean;
+};
+
 interface Props {
 	setThemes: React.Dispatch<React.SetStateAction<themeObj>>;
+	setPref: React.Dispatch<React.SetStateAction<typingPrefObj>>;
+	pref: typingPrefObj;
 }
 
-export const Settings: React.FC<Props> = ({ setThemes }) => {
+export const Settings: React.FC<Props> = ({ setThemes, setPref, pref }) => {
 	const backGroundRef = useRef<HTMLInputElement>(null);
 	const foreGroundRef = useRef<HTMLInputElement>(null);
 	const mainRef = useRef<HTMLInputElement>(null);
@@ -148,6 +188,94 @@ export const Settings: React.FC<Props> = ({ setThemes }) => {
 	return (
 		<div>
 			<div>
+				<InputFieldDiv>
+					<CaretSpan
+						style={{
+							color: themeContext.correct,
+							textDecorationColor: themeContext.main,
+						}}
+						className={"not-curr-letter"}
+					>
+						This is for t
+					</CaretSpan>
+					<CaretSpan
+						style={{
+							color: themeContext.wrong,
+							textDecorationColor: themeContext.main,
+						}}
+						className={"not-curr-letter"}
+					>
+						est
+					</CaretSpan>
+					<CaretSpan
+						style={{
+							color: themeContext.correct,
+							textDecorationColor: themeContext.main,
+						}}
+						className={"not-curr-letter"}
+					>
+						i
+					</CaretSpan>
+					<CaretSpan
+						style={{
+							color: themeContext.untyped,
+							textDecorationColor: themeContext.main,
+						}}
+						className={"curr-letter"}
+					>
+						ng the theme!
+					</CaretSpan>
+				</InputFieldDiv>
+			</div>
+			<div className="center-columnDirection">
+				<form className="center">
+					<OptionLabel htmlFor="skipOnSpace">Skip words on space: </OptionLabel>
+					<input
+						id="skipOnSpace"
+						name="skipOnSpace"
+						type="checkbox"
+						checked={pref.skipWordsOnSpace}
+						onChange={() =>
+							setPref((prev) => {
+								return { ...prev, skipWordsOnSpace: !pref.skipWordsOnSpace };
+							})
+						}
+					/>
+				</form>
+				<form className="center">
+					<OptionLabel htmlFor="pauseOnError">Pause type on error: </OptionLabel>
+					<input
+						id="pauseOnError"
+						name="pauseOnError"
+						type="checkbox"
+						checked={pref.pauseOnEror}
+						onChange={() =>
+							setPref((prev) => {
+								return { ...prev, pauseOnEror: !pref.pauseOnEror };
+							})
+						}
+					/>
+				</form>
+			</div>
+
+			<div>
+				<TitleP>Default Themes</TitleP>
+				<table>
+					<thead>
+						<tr>
+							<TableHeaderTH>Back</TableHeaderTH>
+							<TableHeaderTH>Fore</TableHeaderTH>
+							<TableHeaderTH>Main</TableHeaderTH>
+							<TableHeaderTH>Untyped</TableHeaderTH>
+							<TableHeaderTH>Correct</TableHeaderTH>
+							<TableHeaderTH>Wrong</TableHeaderTH>
+						</tr>
+					</thead>
+					<tbody>{LoadThemes}</tbody>
+				</table>
+			</div>
+			<TitleP>Custom Themes</TitleP>
+			<div className="center">
 				<input
 					className="color-picker"
 					type="color"
@@ -192,23 +320,6 @@ export const Settings: React.FC<Props> = ({ setThemes }) => {
 					ref={wrongRef}
 					onChange={(e) => throttledEventHandler(e.target.value, 5)}
 				/>
-			</div>
-
-			<div>
-				<TitleP>Default Themes</TitleP>
-				<table>
-					<thead>
-						<tr>
-							<TableHeaderTH>Back</TableHeaderTH>
-							<TableHeaderTH>Fore</TableHeaderTH>
-							<TableHeaderTH>Main</TableHeaderTH>
-							<TableHeaderTH>Untyped</TableHeaderTH>
-							<TableHeaderTH>Correct</TableHeaderTH>
-							<TableHeaderTH>Wrong</TableHeaderTH>
-						</tr>
-					</thead>
-					<tbody>{LoadThemes}</tbody>
-				</table>
 			</div>
 		</div>
 	);

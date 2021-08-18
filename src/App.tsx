@@ -6,6 +6,7 @@ import { NotesList } from "./components/NotesList";
 import { Typer } from "./components/Typer";
 import { BrowserRouter, Route } from "react-router-dom";
 import { Settings } from "./pages/Settings";
+import DefaultThemes from "./styles/DefaultThemes";
 
 type themeObj = {
 	background: string;
@@ -16,42 +17,34 @@ type themeObj = {
 	wrong: string;
 };
 
-const defaultTheme = {
-	background: "#323437",
-	foreground: "#292a2d",
-	main: "#e2b71a",
-	untyped: "#646669",
-	correct: "#d1d0c5",
-	wrong: "#ca4754",
-};
-
+const TyperWrapper = styled.div`
+	height: 100%;
+	width: 100%;
+	display: grid;
+	grid-template-columns: 200px 1fr;
+`;
 const AppDiv = styled.div`
 	height: 100vh;
 	width: 100vw;
 	background-color: ${(props) => props.theme.background};
-	display: grid;
-	grid-template-columns: 1fr 1fr;
-	grid-template:
-		"nav nav" auto
-		"noteslist typer" 1fr / auto 1fr;
+	display: flex;
+	flex-direction: column;
 	overflow: hidden;
 `;
 
-const NavDiv = styled.div`
-	grid-area: nav;
-`;
-
-const NotesDiv = styled.div`
-	gird-area: noteslist;
-`;
-
 const MainDiv = styled.div`
+	height: 100%;
+	width: 100%;
 	grid-area: typer;
 	display: flex;
 	justify-content: center;
-	align-items: center;
+	padding-top: 50px;
 	overflow-x: hidden;
 	overflow-y: auto;
+	&::-webkit-scrollbar {
+		width: 10px;
+		border: 1px solid ${(props) => props.theme.foreground};
+	}
 `;
 
 type noteObj = {
@@ -59,9 +52,16 @@ type noteObj = {
 	body: string;
 };
 
+type typingPrefObj = {
+	skipWordsOnSpace: boolean;
+	pauseOnEror: boolean;
+};
+
 function App() {
-	const [theme, setTheme] = useState<themeObj>(defaultTheme);
+	const [theme, setTheme] = useState<themeObj>(DefaultThemes[0]);
 	const [note, setNote] = useState<noteObj>({ title: "Default", body: "This is a default text" });
+	const [pref, setPref] = useState<typingPrefObj>({ skipWordsOnSpace: false, pauseOnEror: false });
+	//Re-render the typer
 	const [test, setTest] = useState<boolean>(false);
 
 	useEffect(() => {
@@ -74,18 +74,16 @@ function App() {
 		<BrowserRouter>
 			<ThemeProvider theme={theme}>
 				<AppDiv>
-					<NavDiv>
-						<NavBar />
-					</NavDiv>
-					<NotesDiv>
-						<NotesList setNote={setNote} setTest={setTest} />
-					</NotesDiv>
+					<NavBar />
 					<MainDiv>
 						<Route path="/" exact>
-							{!test ? <Typer note={note} /> : null}
+							<TyperWrapper>
+								<NotesList setNote={setNote} setTest={setTest} />
+								{!test ? <Typer pref={pref} note={note} /> : null}
+							</TyperWrapper>
 						</Route>
 						<Route path="/settings">
-							<Settings setThemes={setTheme} />
+							<Settings setThemes={setTheme} setPref={setPref} pref={pref} />
 						</Route>
 						<Route path="/collection"></Route>
 						<Route path="/quiz"></Route>
