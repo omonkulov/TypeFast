@@ -80,9 +80,21 @@ function App() {
 		let pauseOnErrorLocal = localStorage.getItem("pauseOnError");
 		if (currectThemeLocal) {
 			setTheme({ ...JSON.parse(currectThemeLocal) });
-			setPref({
-				skipWordsOnSpace: skipOnSpaceLocal ? true : false,
-				pauseOnError: pauseOnErrorLocal ? true : false,
+		}
+		if (skipOnSpaceLocal !== undefined) {
+			setPref((prev) => {
+				return {
+					...prev,
+					skipWordsOnSpace: skipOnSpaceLocal === "true" ? true : false,
+				};
+			});
+		}
+		if (pauseOnErrorLocal !== undefined) {
+			setPref((prev) => {
+				return {
+					...prev,
+					pauseOnError: pauseOnErrorLocal === "true" ? true : false,
+				};
 			});
 		}
 	}, []);
