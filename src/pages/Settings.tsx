@@ -48,7 +48,6 @@ const CaretSpan = styled.span`
 `;
 const InputFieldDiv = styled.div`
 	background-color: ${(props) => props.theme.background};
-	width: 90%;
 	margin: 2rem auto;
 	padding: 1rem;
 	transition: all 0.3s;
@@ -76,7 +75,7 @@ type themeObj = {
 
 type typingPrefObj = {
 	skipWordsOnSpace: boolean;
-	pauseOnEror: boolean;
+	pauseOnError: boolean;
 };
 
 interface Props {
@@ -119,6 +118,7 @@ export const Settings: React.FC<Props> = ({ setThemes, setPref, pref }) => {
 				onClick={() => {
 					setThemes(theme);
 					updateDefaultValue(theme);
+					localStorage.setItem("currentTheme", JSON.stringify(theme));
 				}}
 			>
 				<td>
@@ -186,7 +186,7 @@ export const Settings: React.FC<Props> = ({ setThemes, setPref, pref }) => {
 	const throttledEventHandler = useMemo(() => throttle(handleChange, 300), [handleChange]);
 
 	return (
-		<div>
+		<div className="scroll-enabled">
 			<div>
 				<InputFieldDiv>
 					<CaretSpan
@@ -196,7 +196,25 @@ export const Settings: React.FC<Props> = ({ setThemes, setPref, pref }) => {
 						}}
 						className={"not-curr-letter"}
 					>
-						This is for t
+						This is
+					</CaretSpan>
+					<CaretSpan
+						style={{
+							backgroundColor: themeContext.wrong,
+							textDecorationColor: themeContext.main,
+						}}
+						className={"not-curr-letter"}
+					>
+						{" "}
+					</CaretSpan>
+					<CaretSpan
+						style={{
+							color: themeContext.correct,
+							textDecorationColor: themeContext.main,
+						}}
+						className={"not-curr-letter"}
+					>
+						for t
 					</CaretSpan>
 					<CaretSpan
 						style={{
@@ -237,6 +255,7 @@ export const Settings: React.FC<Props> = ({ setThemes, setPref, pref }) => {
 						checked={pref.skipWordsOnSpace}
 						onChange={() =>
 							setPref((prev) => {
+								localStorage.setItem("skipOnSpace", !pref.skipWordsOnSpace + "");
 								return { ...prev, skipWordsOnSpace: !pref.skipWordsOnSpace };
 							})
 						}
@@ -248,10 +267,11 @@ export const Settings: React.FC<Props> = ({ setThemes, setPref, pref }) => {
 						id="pauseOnError"
 						name="pauseOnError"
 						type="checkbox"
-						checked={pref.pauseOnEror}
+						checked={pref.pauseOnError}
 						onChange={() =>
 							setPref((prev) => {
-								return { ...prev, pauseOnEror: !pref.pauseOnEror };
+								localStorage.setItem("pauseOnError", !pref.pauseOnError + "");
+								return { ...prev, pauseOnError: !pref.pauseOnError };
 							})
 						}
 					/>

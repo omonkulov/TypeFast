@@ -31,7 +31,7 @@ interface Props {
 	};
 	pref: {
 		skipWordsOnSpace: boolean;
-		pauseOnEror: boolean;
+		pauseOnError: boolean;
 	};
 }
 
@@ -42,7 +42,7 @@ export const Typer: React.FC<Props> = ({ note, pref }) => {
 	const {
 		states: { charsState, currIndex },
 		actions: { insertTyping, deleteTyping, resetTyping },
-	} = useTyping(note.body, { skipCurrentWordOnSpace: pref.skipWordsOnSpace, pauseOnError: pref.pauseOnEror });
+	} = useTyping(note.body, { skipCurrentWordOnSpace: pref.skipWordsOnSpace, pauseOnError: pref.pauseOnError });
 
 	//handle key presses
 	const handleKeyDown = (letter: string, control: boolean) => {
@@ -71,14 +71,13 @@ export const Typer: React.FC<Props> = ({ note, pref }) => {
 				{note.body.split("").map((char: string, index: number) => {
 					let state = charsState[index];
 					let color =
-						state === 0 ? themeContext.utyped : state === 1 ? themeContext.correct : themeContext.wrong;
-					let backgroundcolor = state === 2 && char === " " ? themeContext.wrong : "";
+						state === 0 ? themeContext.untyped : state === 1 ? themeContext.correct : themeContext.wrong;
 					return (
 						<CaretSpan
 							key={char + index}
 							style={{
 								color: color,
-								backgroundColor: backgroundcolor,
+								backgroundColor: state === 2 && char === " " ? color : "",
 								textDecorationColor: themeContext.main,
 							}}
 							ref={currIndex + 1 === index ? letterElements : null}

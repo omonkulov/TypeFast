@@ -2,18 +2,24 @@ import React from "react";
 import styled from "styled-components";
 
 const WrapperDiv = styled.div`
-	padding: 5px;
+	padding: 5px 10px;
 	min-width: 200px;
-	height: 98%;
 	border-right: 5px solid ${(props) => props.theme.foreground};
 `;
 
 const SearchInput = styled.input`
-	background-color: ${(props) => props.theme.foreground};
-	color: white;
+	border: none;
+	border-bottom: 5px solid ${(props) => props.theme.foreground};
+	color: ${(props) => props.theme.correct};
 `;
 
 const NoteP = styled.p`
+	background-color: ${(props) => props.theme.foreground};
+	margin: 10px auto;
+	padding: 20px 10px;
+	text-align: center;
+	cursor: pointer;
+	word-break: break-word;
 	color: ${(props) => props.theme.correct};
 `;
 
@@ -29,7 +35,7 @@ interface Props {
 //Examples
 const exmaple = [
 	{
-		title: "Dominican Restoration War",
+		title: "Dominican Restoration War  ",
 		body: "The Dominican Restoration War or the Dominican War of Restoration was a guerrilla war between 1863 and 1865 in the Dominican Republic between nationalists and Spain, who had recolonized the country 17 years after its independence.",
 	},
 	{
@@ -44,11 +50,7 @@ const exmaple = [
 export const NotesList: React.FC<Props> = ({ setNote, setTest }) => {
 	return (
 		<WrapperDiv>
-			<div>
-				<p>All</p>
-				<p>History</p>
-			</div>
-			<SearchInput type="text" />
+			<SearchInput type="text" className="noteslist-input" placeholder="Search" />
 			<div>
 				{exmaple.map((obj, i) => {
 					return (

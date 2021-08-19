@@ -17,33 +17,43 @@ type themeObj = {
 	wrong: string;
 };
 
-const TyperWrapper = styled.div`
-	height: 100%;
+const TyperWrapper = styled.div`\
 	width: 100%;
 	display: grid;
 	grid-template-columns: 200px 1fr;
 `;
 const AppDiv = styled.div`
-	height: 100vh;
-	width: 100vw;
+	width: 100%;
 	background-color: ${(props) => props.theme.background};
 	display: flex;
 	flex-direction: column;
-	overflow: hidden;
+	padding: 10px;
 `;
 
 const MainDiv = styled.div`
-	height: 100%;
-	width: 100%;
 	grid-area: typer;
 	display: flex;
 	justify-content: center;
-	padding-top: 50px;
+	padding-top: 15px;
 	overflow-x: hidden;
 	overflow-y: auto;
-	&::-webkit-scrollbar {
-		width: 10px;
-		border: 1px solid ${(props) => props.theme.foreground};
+	/* width */
+	::-webkit-scrollbar {
+		width: 4px;
+	}
+
+	/* Track */
+	::-webkit-scrollbar-track {
+	}
+
+	/* Handle */
+	::-webkit-scrollbar-thumb {
+		background: ${(props) => props.theme.main};
+	}
+
+	/* Handle on hover */
+	::-webkit-scrollbar-thumb:hover {
+		background: ${(props) => props.theme.wrong};
 	}
 `;
 
@@ -54,15 +64,28 @@ type noteObj = {
 
 type typingPrefObj = {
 	skipWordsOnSpace: boolean;
-	pauseOnEror: boolean;
+	pauseOnError: boolean;
 };
 
 function App() {
 	const [theme, setTheme] = useState<themeObj>(DefaultThemes[0]);
 	const [note, setNote] = useState<noteObj>({ title: "Default", body: "This is a default text" });
-	const [pref, setPref] = useState<typingPrefObj>({ skipWordsOnSpace: false, pauseOnEror: false });
+	const [pref, setPref] = useState<typingPrefObj>({ skipWordsOnSpace: false, pauseOnError: false });
 	//Re-render the typer
 	const [test, setTest] = useState<boolean>(false);
+
+	useEffect(() => {
+		let currectThemeLocal = localStorage.getItem("currentTheme");
+		let skipOnSpaceLocal = localStorage.getItem("skipOnSpace");
+		let pauseOnErrorLocal = localStorage.getItem("pauseOnError");
+		if (currectThemeLocal) {
+			setTheme({ ...JSON.parse(currectThemeLocal) });
+			setPref({
+				skipWordsOnSpace: skipOnSpaceLocal ? true : false,
+				pauseOnError: pauseOnErrorLocal ? true : false,
+			});
+		}
+	}, []);
 
 	useEffect(() => {
 		if (test) {

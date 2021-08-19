@@ -5,27 +5,33 @@ import { Link } from "react-router-dom";
 const NavWrap = styled.div`
 	display: flex;
 	padding: 5px;
-	display: flex;
 	justify-content: center;
 	align-items: center;
+	margin: 12px 0px;
 	color: ${(props) => props.theme.correct};
 	font-size: 1.4rem;
-	gap: 10vw;
+	gap: 40px;
+`;
+
+const NavP = styled.p`
+	&:hover {
+		background-color: ${(props) => props.theme.foreground};
+	}
 `;
 export const NavBar: React.FC = () => {
 	return (
 		<NavWrap>
 			<Link className="navLink" to="/">
-				<p>NoteType</p>
+				<NavP>NoteType</NavP>
 			</Link>
 			<Link className="navLink" to="/collection">
-				<p>Collections</p>
+				<NavP>Collections</NavP>
 			</Link>
 			<Link className="navLink" to="/quiz">
-				<p>Quiz</p>
+				<NavP>Quiz</NavP>
 			</Link>
 			<Link className="navLink" to="/settings">
-				<p>Settings</p>
+				<NavP>Settings</NavP>
 			</Link>
 		</NavWrap>
 	);

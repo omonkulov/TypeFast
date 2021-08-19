@@ -2,9 +2,17 @@
 	margin: 0;
 	padding: 0;
 }
-
+html {
+	height: 100%;
+}
 body {
 	font-family: monospace;
+	height: 100%;
+}
+#root {
+	height: 100%;
+	display: flex;
+	justify-content: center;
 }
 
 td,
@@ -13,6 +21,20 @@ th {
 	height: 2rem;
 	padding: 5px;
 	text-align: center;
+}
+.noteslist-input {
+	height: 20px;
+	background: transparent;
+	margin: 10px auto;
+	width: 100%;
+	font-size: 1.4rem;
+	margin: 0;
+	margin-bottom: 1.6rem;
+	padding-bottom: 10px;
+	text-align: center;
+}
+.noteslist-input:focus {
+	outline: none;
 }
 .center {
 	display: flex;
@@ -62,6 +84,13 @@ table {
 .curr-letter {
 	box-sizing: border-box;
 	animation: flash 0.7s infinite;
+}
+
+.fullW {
+	width: 100%;
+}
+.fullH {
+	height: 100%;
 }
 
 @keyframes flash {
