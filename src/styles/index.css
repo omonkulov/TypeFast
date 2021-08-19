@@ -79,10 +79,9 @@ table {
 }
 
 .not-curr-letter {
-	border: unset !important;
+	border-left: 0.2rem solid transparent !important;
 }
 .curr-letter {
-	box-sizing: border-box;
 	animation: flash 0.7s infinite;
 }
 
