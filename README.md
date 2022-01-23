@@ -1,6 +1,12 @@
-# Getting Started with Create React App
+# Typenotes: Learn to type faster and memorize materials
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+### Smooth and seamless typing
+![Alt Text](https://github.com/omonkulov/TypeNotes/blob/main/gifs/typing.gif?raw=true) 
+
+
+### Dynamic colors 
+![Alt Text](https://github.com/omonkulov/TypeNotes/blob/main/gifs/color%20(1).gif?raw=true) 
+
 
 ## Available Scripts
 
